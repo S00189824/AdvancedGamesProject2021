@@ -1,2 +1,0 @@
-C:\Users\David\Documents\Github\AdvancedGamesProject2021\AdvGamesProject\Intermediate\Build\Win64\UE4Editor\Development\AdvGamesProject\Definitions.AdvGamesProject.h
-C:\Users\David\Documents\Github\AdvancedGamesProject2021\AdvGamesProject\Source\AdvGamesProject\AdvGamesProject.h
