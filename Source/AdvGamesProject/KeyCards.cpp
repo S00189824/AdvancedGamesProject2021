@@ -38,6 +38,7 @@ void AKeyCards::NotifyActorBeginOverlap(AActor* OtherActor)
 	UE_LOG(LogTemp, Warning, TEXT("Overlapping"));
 	if (OtherActor)
 	{
+		// creating a method for overlap on object
 		if (OtherActor->IsA(AAdvGamesProjectCharacter::StaticClass()))
 		{
 			Destroy();

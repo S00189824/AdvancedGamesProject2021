@@ -9,7 +9,7 @@
 
 
 UENUM(BlueprintType)
-enum Type
+enum class Type : uint8
 {
 	Red,
 	Blue,
@@ -36,7 +36,7 @@ public:
 	USphereComponent* SphereComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<Type>Type;
+	Type Type;
 
 
 
@@ -48,6 +48,7 @@ public:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// implementing here
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 };

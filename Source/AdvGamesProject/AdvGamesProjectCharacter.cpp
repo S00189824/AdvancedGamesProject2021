@@ -5,6 +5,11 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "KeyCards.h"
+#include "MyPlayerState.h"
+#include "DrawDebugHelpers.h"
+#include "Doors.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -74,6 +79,25 @@ void AAdvGamesProjectCharacter::SetupPlayerInputComponent(class UInputComponent*
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AAdvGamesProjectCharacter::OnResetVR);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AAdvGamesProjectCharacter::OnFire);
+}
+
+void AAdvGamesProjectCharacter::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	if (OtherActor)
+	{
+		// creating a method for overlap on object
+		if (OtherActor->IsA(AKeyCards::StaticClass()))
+		{
+			AKeyCards* KeyCard = Cast<AKeyCards>(OtherActor);
+			if (GetPlayerState()->IsA(AMyPlayerState::StaticClass()))
+			{
+				AMyPlayerState* playerstate = Cast<AMyPlayerState>(GetPlayerState());
+				playerstate->AddKey(KeyCard->Type);
+			}
+			
+		}
+	}
 }
 
 
@@ -115,6 +139,44 @@ void AAdvGamesProjectCharacter::MoveForward(float Value)
 		// get forward vector
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
+	}
+}
+
+//void AAdvGamesProjectCharacter::PickupHandler
+
+
+void AAdvGamesProjectCharacter::OnFire()
+{
+	if (GetWorld())
+	{
+		APlayerCameraManager* Camera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+
+		if (Camera)
+		{
+			FVector Location = Camera->GetCameraLocation();
+			FVector Forward = Camera->GetActorForwardVector();
+
+			FHitResult hit;
+			FCollisionQueryParams Params;
+
+			if (GetWorld()->LineTraceSingleByChannel(hit, Location, (Forward * 10000) + Location, ECollisionChannel::ECC_Visibility, Params))
+			{
+				DrawDebugLine(GetWorld(), Location, (Forward * 10000) + Location, FColor(255, 0, 0), true, 10.0f, 0, 2.0f);
+				if (hit.GetActor())
+				{
+					if (hit.GetActor()->IsA(ADoors::StaticClass()))
+					{
+						ADoors* HittingDoors = Cast<ADoors>(hit.Actor);
+
+						if (GetPlayerState()->IsA(AMyPlayerState::StaticClass()))
+						{
+							AMyPlayerState* Playerstate = Cast<AMyPlayerState>(GetPlayerState());
+							Playerstate->KeyCard(HittingDoors);
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
